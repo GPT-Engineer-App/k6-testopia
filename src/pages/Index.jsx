@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Cat, Heart, Info, Paw, Moon, Sun, ChevronLeft, ChevronRight } from "lucide-react";
+import { Cat, Heart, Info, Paw, Moon, Sun, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,22 +8,26 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const [likes, setLikes] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [currentBreedIndex, setCurrentBreedIndex] = useState(0);
   const [isHovering, setIsHovering] = useState(false);
+  const [catHappiness, setCatHappiness] = useState(50);
+  const { toast } = useToast();
 
   const catBreeds = [
-    { name: "Siamese", description: "Known for their distinctive coloring and vocal nature" },
-    { name: "Maine Coon", description: "Large, fluffy cats with tufted ears" },
-    { name: "Persian", description: "Recognizable by their flat faces and long, luxurious coats" },
-    { name: "Bengal", description: "Wild-looking cats with spotted or marbled coats" },
-    { name: "Scottish Fold", description: "Characterized by their folded ears and round faces" },
-    { name: "Sphynx", description: "Hairless cats known for their wrinkled skin" },
-    { name: "Russian Blue", description: "Elegant cats with silvery-blue coats" },
-    { name: "Ragdoll", description: "Large, semi-longhaired cats with blue eyes" },
+    { name: "Siamese", description: "Known for their distinctive coloring and vocal nature", funFact: "Siamese cats are believed to bring good luck in their native Thailand." },
+    { name: "Maine Coon", description: "Large, fluffy cats with tufted ears", funFact: "Maine Coons are often called 'gentle giants' due to their large size and friendly nature." },
+    { name: "Persian", description: "Recognizable by their flat faces and long, luxurious coats", funFact: "Persian cats have been featured in art and literature for centuries." },
+    { name: "Bengal", description: "Wild-looking cats with spotted or marbled coats", funFact: "Bengal cats are known for their love of water and may even enjoy swimming!" },
+    { name: "Scottish Fold", description: "Characterized by their folded ears and round faces", funFact: "Not all Scottish Fold kittens are born with folded ears; some have straight ears." },
+    { name: "Sphynx", description: "Hairless cats known for their wrinkled skin", funFact: "Despite their lack of fur, Sphynx cats are not hypoallergenic." },
+    { name: "Russian Blue", description: "Elegant cats with silvery-blue coats", funFact: "Russian Blues are said to bring good luck and heal human diseases in Russian folklore." },
+    { name: "Ragdoll", description: "Large, semi-longhaired cats with blue eyes", funFact: "Ragdolls got their name from their tendency to relax and go limp when held." },
   ];
 
   useEffect(() => {
@@ -42,6 +46,14 @@ const Index = () => {
 
   const prevBreed = () => {
     setCurrentBreedIndex((prevIndex) => (prevIndex - 1 + catBreeds.length) % catBreeds.length);
+  };
+
+  const petCat = () => {
+    setCatHappiness(prevHappiness => Math.min(prevHappiness + 10, 100));
+    toast({
+      title: "Meow!",
+      description: "The cat purrs happily.",
+    });
   };
 
   return (
@@ -66,7 +78,12 @@ const Index = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Cat className={`mr-4 ${isDarkMode ? 'text-pink-300' : 'text-pink-600'}`} size={80} />
+          <motion.div
+            whileHover={{ rotate: [0, -10, 10, -10, 10, 0], transition: { duration: 0.5 } }}
+            whileTap={{ scale: 0.9 }}
+          >
+            <Cat className={`mr-4 ${isDarkMode ? 'text-pink-300' : 'text-pink-600'}`} size={80} />
+          </motion.div>
           <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-purple-500">
             All About Cats
           </span>
@@ -96,7 +113,8 @@ const Index = () => {
             transition={{ duration: 0.3 }}
           >
             <h2 className="text-3xl font-bold mb-2">{catBreeds[currentBreedIndex].name}</h2>
-            <p className="text-lg">{catBreeds[currentBreedIndex].description}</p>
+            <p className="text-lg mb-2">{catBreeds[currentBreedIndex].description}</p>
+            <p className="text-sm italic">Fun fact: {catBreeds[currentBreedIndex].funFact}</p>
           </motion.div>
           <Button
             variant="ghost"
@@ -115,6 +133,33 @@ const Index = () => {
             <ChevronRight size={24} />
           </Button>
         </motion.div>
+
+        <Card className={`mb-12 ${isDarkMode ? 'bg-gray-800' : ''}`}>
+          <CardHeader>
+            <CardTitle className={`text-4xl ${isDarkMode ? 'text-purple-300' : 'text-purple-700'}`}>Virtual Cat</CardTitle>
+            <CardDescription className={`text-xl ${isDarkMode ? 'text-gray-400' : ''}`}>Pet the cat to make it happy!</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between mb-4">
+              <span className={`text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Cat Happiness:</span>
+              <Progress value={catHappiness} className="w-2/3" />
+            </div>
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="flex justify-center"
+            >
+              <Button
+                variant={isDarkMode ? "secondary" : "default"}
+                className="text-lg px-8 py-6"
+                onClick={petCat}
+              >
+                <Paw className={`mr-2 ${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`} size={24} />
+                Pet the Cat
+              </Button>
+            </motion.div>
+          </CardContent>
+        </Card>
         <Card className={`mb-12 ${isDarkMode ? 'bg-gray-800' : ''}`}>
           <CardHeader>
             <CardTitle className={`text-4xl ${isDarkMode ? 'text-purple-300' : 'text-purple-700'}`}>Fascinating Felines</CardTitle>
@@ -129,7 +174,13 @@ const Index = () => {
                 <Button
                   variant={isDarkMode ? "secondary" : "default"}
                   className="flex items-center text-lg"
-                  onClick={() => setLikes(likes + 1)}
+                  onClick={() => {
+                    setLikes(likes + 1);
+                    toast({
+                      title: "Meow!",
+                      description: "Thanks for the love!",
+                    });
+                  }}
                 >
                   <Heart className={`mr-2 ${isDarkMode ? 'text-red-400' : 'text-pink-500'}`} />
                   Like ({likes})
@@ -138,7 +189,10 @@ const Index = () => {
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <motion.div whileHover={{ rotate: 20 }}>
+                    <motion.div 
+                      whileHover={{ rotate: [0, -10, 10, -10, 10, 0] }}
+                      transition={{ duration: 0.5 }}
+                    >
                       <Button variant="ghost" className="p-2">
                         <Paw className={isDarkMode ? 'text-yellow-400' : 'text-yellow-600'} size={32} />
                       </Button>
@@ -149,6 +203,12 @@ const Index = () => {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: 360 }}
+                transition={{ duration: 0.5 }}
+              >
+                <Star className={isDarkMode ? 'text-yellow-300' : 'text-yellow-500'} size={32} />
+              </motion.div>
             </div>
           </CardContent>
         </Card>
